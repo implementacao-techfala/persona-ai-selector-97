@@ -12,30 +12,14 @@ type Step = "intro" | "recording" | "review" | "result";
 const PersonalizeIA = () => {
   const [currentStep, setCurrentStep] = useState<Step>("intro");
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [transcript, setTranscript] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 100);
   }, []);
 
-  useEffect(() => {
-    if (currentStep === "processing") {
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setTimeout(() => setCurrentStep("result"), 500);
-            return 100;
-          }
-          return prev + 4.3; // Aproximadamente 23 segundos
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [currentStep]);
 
   const handleStartRecording = () => {
     setCurrentStep("recording");
@@ -122,10 +106,10 @@ const PersonalizeIA = () => {
         <div className="text-center space-y-8">
           <div className="space-y-4">
             <h2 className="text-3xl font-bold text-white">
-              Conte sobre você
+              Descreva seu atendimento
             </h2>
             <p className="text-gray-300">
-              Fale sobre seus interesses, personalidade e como gostaria que sua IA se comportasse
+              Explique como sua empresa atende, seus serviços e o tom ideal de comunicação
             </p>
           </div>
 
@@ -210,7 +194,7 @@ const PersonalizeIA = () => {
               Sua IA está pronta! 🎉
             </h2>
             <p className="text-gray-300">
-              Criamos uma assistente única baseada em sua personalidade e preferências
+              Configuramos a assistente com as diretrizes e o tom de atendimento da sua empresa
             </p>
           </div>
 
