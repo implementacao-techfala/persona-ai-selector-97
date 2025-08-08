@@ -13,7 +13,7 @@ interface PhoneNumberInputProps {
 
 const PhoneNumberInput = ({ n8nConfig, onClose }: PhoneNumberInputProps) => {
   const [phoneNumbers, setPhoneNumbers] = useState<string[]>(['']);
-  const { definePhone, isLoading } = useN8N(n8nConfig);
+  const { definePhone } = useN8N(n8nConfig);
 
   const addPhoneField = () => {
     if (phoneNumbers.length < 3) {
@@ -41,12 +41,9 @@ const PhoneNumberInput = ({ n8nConfig, onClose }: PhoneNumberInputProps) => {
       return;
     }
 
-    // Enviar array com todos os números para o N8N
-    const success = await definePhone(validNumbers);
-    
-    if (success) {
-      onClose();
-    }
+    // Enviar array com todos os números no background e continuar imediatamente
+    definePhone(validNumbers);
+    onClose();
   };
 
   const handleSkip = () => {
@@ -110,11 +107,10 @@ const PhoneNumberInput = ({ n8nConfig, onClose }: PhoneNumberInputProps) => {
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isLoading}
             className="flex-1 bg-green-600 hover:bg-green-700 text-white"
           >
             <Send className="h-4 w-4 mr-2" />
-            {isLoading ? 'Enviando...' : 'Continuar'}
+            Continuar
           </Button>
         </div>
       </CardContent>

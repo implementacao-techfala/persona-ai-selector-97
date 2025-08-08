@@ -7,6 +7,7 @@ interface AIVoiceInputProps {
   onStart?: () => void;
   onStop?: (duration: number) => void;
   onAudioData?: (audioBlob: Blob) => void;
+  onTranscriptChange?: (text: string, isFinal: boolean) => void;
   visualizerBars?: number;
   className?: string;
 }
@@ -15,6 +16,7 @@ export function AIVoiceInput({
   onStart,
   onStop,
   onAudioData,
+  onTranscriptChange,
   visualizerBars = 48,
   className
 }: AIVoiceInputProps) {
@@ -27,6 +29,7 @@ export function AIVoiceInput({
   const audioChunksRef = useRef<Blob[]>([]);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationRef = useRef<number>();
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     checkMicrophonePermission();
@@ -56,6 +59,31 @@ export function AIVoiceInput({
     } catch (error) {
       console.error('Microphone permission denied:', error);
       setHasPermission(false);
+    }
+  };
+
+  const startSpeechRecognition = () => {
+    try {
+      const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SpeechRecognitionClass) return;
+      const recognition = new SpeechRecognitionClass();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'pt-BR';
+      recognition.onresult = (event: any) => {
+        let text = '';
+        for (let i = 0; i < event.results.length; i++) {
+          text += event.results[i][0].transcript + ' ';
+        }
+        onTranscriptChange?.(text.trim(), event.results[event.results.length - 1]?.isFinal ?? false);
+      };
+      recognition.onerror = (e: any) => {
+        console.error('Speech recognition error:', e);
+      };
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (e) {
+      console.warn('Speech recognition not available', e);
     }
   };
 
@@ -110,6 +138,7 @@ export function AIVoiceInput({
         setAudioLevels([]);
       };
 
+      startSpeechRecognition();
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
@@ -121,6 +150,10 @@ export function AIVoiceInput({
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
+      try {
+        recognitionRef.current?.stop?.();
+      } catch {}
+      recognitionRef.current = null;
       setIsRecording(false);
     }
   };

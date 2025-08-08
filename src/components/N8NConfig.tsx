@@ -28,7 +28,7 @@ const N8NConfig = ({ onConfigSave, onClose, currentConfig }: N8NConfigProps) => 
           <CardTitle className="text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
-              Configuração N8N
+              Configuração de Integração
             </div>
             <Button
               onClick={onClose}
@@ -43,17 +43,17 @@ const N8NConfig = ({ onConfigSave, onClose, currentConfig }: N8NConfigProps) => 
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              URL Base do N8N
+              URL do Servidor
             </label>
             <input
               type="url"
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
-              placeholder="https://seu-n8n.com"
+              placeholder="https://seu-servidor.com"
               className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
             />
             <p className="text-xs text-gray-400 mt-1">
-              Digite a URL do seu servidor N8N (ex: https://n8n.exemplo.com)
+              Digite a URL do seu servidor de automação (ex: https://api.exemplo.com)
             </p>
           </div>
           

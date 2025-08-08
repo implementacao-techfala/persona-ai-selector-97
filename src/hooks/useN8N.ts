@@ -26,7 +26,7 @@ export const useN8N = (config: N8NConfig) => {
       setError(errorMessage);
       toast({
         title: "Erro na Conexão",
-        description: "Verifique se o N8N está configurado corretamente e acessível.",
+        description: "Verifique se o servidor está configurado corretamente e acessível.",
         variant: "destructive",
       });
       return null;
@@ -47,7 +47,7 @@ export const useN8N = (config: N8NConfig) => {
       setError(errorMessage);
       toast({
         title: "Erro ao Enviar Mensagem",
-        description: "Verifique se o N8N está configurado corretamente.",
+        description: "Verifique se o servidor está configurado corretamente.",
         variant: "destructive",
       });
       return null;

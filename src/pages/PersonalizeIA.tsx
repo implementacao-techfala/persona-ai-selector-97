@@ -3,18 +3,18 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { GlowCard } from "@/components/ui/spotlight-card";
 import { AIVoiceInput } from "@/components/AIVoiceInput";
-import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import { Bot, ArrowRight, Check, Sparkles, Heart, Brain, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-type Step = "intro" | "recording" | "processing" | "result";
+type Step = "intro" | "recording" | "review" | "result";
 
 const PersonalizeIA = () => {
   const [currentStep, setCurrentStep] = useState<Step>("intro");
-  const [progress, setProgress] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [transcript, setTranscript] = useState("");
   const [isVisible, setIsVisible] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 100);
@@ -47,7 +47,7 @@ const PersonalizeIA = () => {
 
   const handleAudioData = (blob: Blob) => {
     setAudioBlob(blob);
-    setCurrentStep("processing");
+    setCurrentStep("review");
   };
 
   const handleFinish = () => {
@@ -73,28 +73,28 @@ const PersonalizeIA = () => {
 
           <div className="space-y-4">
             <h1 className="text-4xl font-bold text-white animate-fade-in">
-              Personalize sua IA
+              Personalize sua IA corporativa
             </h1>
             <p className="text-xl text-gray-300 animate-fade-in delay-300">
-              Vamos criar uma assistente única com sua personalidade
+              Vamos criar uma assistente alinhada ao seu negócio
             </p>
             <p className="text-gray-400 text-sm animate-fade-in delay-500">
-              Grave um áudio de 10-30 segundos falando sobre você, seus interesses e como gostaria que sua IA se comportasse
+              Grave um áudio de 10–30 segundos descrevendo como é o atendimento da sua empresa, quais serviços oferece e o tom ideal de comunicação
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in delay-700">
             <div className="flex items-center gap-3 text-sm text-gray-300">
               <Heart className="h-5 w-5 text-red-400" />
-              <span>Sua personalidade</span>
+              <span>Atendimento da empresa</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-gray-300">
               <Brain className="h-5 w-5 text-blue-400" />
-              <span>Seus interesses</span>
+              <span>Serviços e processos</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-gray-300">
               <Zap className="h-5 w-5 text-yellow-400" />
-              <span>Seu estilo</span>
+              <span>Tom e regras de comunicação</span>
             </div>
           </div>
 
@@ -133,16 +133,17 @@ const PersonalizeIA = () => {
             onStart={handleStartRecording}
             onStop={handleStopRecording}
             onAudioData={handleAudioData}
+            onTranscriptChange={(text) => setTranscript(text)}
             className="py-8"
           />
 
           <div className="space-y-2 text-sm text-gray-400">
-            <p>💡 Dicas para uma IA personalizada:</p>
+            <p>💡 Dicas para uma IA empresarial:</p>
             <div className="text-left space-y-1 max-w-md mx-auto">
-              <p>• Fale sobre seus hobbies e interesses</p>
-              <p>• Mencione seu estilo de comunicação preferido</p>
-              <p>• Descreva como gostaria de ser tratado</p>
-              <p>• Compartilhe suas preferências profissionais</p>
+              <p>• Descreva como sua equipe atende clientes (saudação, postura)</p>
+              <p>• Liste serviços/produtos e principais dúvidas</p>
+              <p>• Diga o tom de voz (formal/informal) e regras do que pode/não pode falar</p>
+              <p>• Informe horários de atendimento, prazos e prioridades</p>
             </div>
           </div>
         </div>
@@ -158,38 +159,33 @@ const PersonalizeIA = () => {
         className="w-full max-w-2xl h-auto p-8"
       >
         <div className="text-center space-y-8">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center animate-pulse">
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center">
             <Brain className="h-10 w-10 text-white" />
           </div>
 
           <div className="space-y-4">
             <h2 className="text-3xl font-bold text-white">
-              Criando sua IA personalizada
+              Revise e edite o texto da sua IA
             </h2>
             <p className="text-gray-300">
-              Analisando sua voz e preferências...
+              Transcrevemos seu áudio abaixo. Edite se desejar e prossiga.
             </p>
           </div>
 
           <div className="space-y-4">
-            <Progress value={progress} className="w-full" />
-            <p className="text-sm text-gray-400">
-              {Math.round(progress)}% completo - {Math.max(0, 23 - Math.round(progress * 0.23))}s restantes
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-300">
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${progress > 20 ? 'bg-green-400' : 'bg-gray-600'}`} />
-              <span>Analisando voz</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${progress > 60 ? 'bg-green-400' : 'bg-gray-600'}`} />
-              <span>Processando personalidade</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${progress > 90 ? 'bg-green-400' : 'bg-gray-600'}`} />
-              <span>Finalizando IA</span>
+            <Textarea
+              value={transcript}
+              onChange={(e) => setTranscript(e.target.value)}
+              placeholder="O texto aparecerá aqui..."
+              className="w-full min-h-[160px] bg-slate-800 border-slate-600 text-white"
+            />
+            <div className="flex items-center justify-center gap-3">
+              <Button onClick={() => setCurrentStep('recording')} variant="outline" className="border-slate-600 text-slate-200">
+                Regravar
+              </Button>
+              <Button onClick={() => setCurrentStep('result')} className="bg-green-600 hover:bg-green-700 text-white">
+                Confirmar
+              </Button>
             </div>
           </div>
         </div>
@@ -257,7 +253,7 @@ const PersonalizeIA = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
       {currentStep === "intro" && renderIntro()}
       {currentStep === "recording" && renderRecording()}
-      {currentStep === "processing" && renderProcessing()}
+      {currentStep === "review" && renderProcessing()}
       {currentStep === "result" && renderResult()}
     </div>
   );

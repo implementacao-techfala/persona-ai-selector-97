@@ -124,7 +124,7 @@ const WhatsAppTestSession = ({ selectedName, selectedPersonality, onChangePerson
               </div>
               <div className="flex items-center justify-center gap-2 text-green-400 text-sm">
                 <Zap className="h-4 w-4" />
-                <span>Integração com N8N e Redis</span>
+                <span>Integração com servidor de automação</span>
               </div>
             </div>
 

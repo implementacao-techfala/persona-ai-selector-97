@@ -98,7 +98,7 @@ const WhatsAppInterface = ({ reservedNumber, aiName, onClearMemory, isLoadingCle
       // Remover mensagem de loading e adicionar mensagem de erro
       const errorMessage: Message = {
         id: messages.length + 3,
-        text: "Desculpe, ocorreu um erro ao processar sua mensagem. Verifique se o N8N está configurado corretamente.",
+        text: "Desculpe, ocorreu um erro ao processar sua mensagem. Verifique se o servidor está configurado corretamente.",
         sender: 'ai',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
