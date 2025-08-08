@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WelcomeScreen from "../components/WelcomeScreen";
 import PersonalitySelector from "../components/PersonalitySelector";
 import NameSelector from "../components/NameSelector";
@@ -8,11 +8,7 @@ import AIChat from "../components/AIChat";
 
 type Step = "welcome" | "personality" | "name" | "phone" | "complete";
 
-// Configuração atualizada do N8N com o novo endpoint
-const N8N_CONFIG = {
-  baseUrl: "https://automatewebhook.techfala.com.br",
-  webhookToken: ""
-};
+import { N8N_CONFIG } from "@/config/n8n";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState<Step>("welcome");
@@ -80,6 +76,7 @@ const Index = () => {
           selectedPersonality={selectedPersonality}
           onChangePersonality={handleChangePersonality}
           onRestart={handleRestart}
+          n8nConfig={N8N_CONFIG}
         />
       )}
     </div>

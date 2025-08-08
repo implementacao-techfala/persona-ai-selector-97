@@ -108,6 +108,50 @@ class N8NService {
     }
   }
 
+  async sendPrompt(prompt: string, mode: 'original' | 'alteracao' = 'original'): Promise<any> {
+    try {
+      const userId = this.getUserId();
+
+      console.log('Sending prompt with config:', this.config, 'mode:', mode);
+      console.log('Sending request to:', `${this.config.baseUrl}/webhook/definir-mensagem`);
+
+      const body: Record<string, any> = {
+        userId,
+        timestamp: new Date().toISOString(),
+      };
+
+      if (mode === 'alteracao') {
+        body['prompt-alteracao'] = prompt;
+        body.action = 'update_prompt';
+      } else {
+        body['prompt'] = prompt;
+        body.action = 'define_prompt';
+      }
+
+      const response = await fetch(`${this.config.baseUrl}/webhook/definir-mensagem`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.config.webhookToken && { 'Authorization': `Bearer ${this.config.webhookToken}` })
+        },
+        body: JSON.stringify(body)
+      });
+
+      console.log('Prompt response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Prompt sent successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Error sending prompt:', error);
+      throw error;
+    }
+  }
+
   async definePhone(phoneNumbers: string[]): Promise<void> {
     try {
       const userId = this.getUserId();

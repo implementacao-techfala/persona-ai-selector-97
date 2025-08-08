@@ -56,6 +56,31 @@ export const useN8N = (config: N8NConfig) => {
     }
   }, [n8nService, toast]);
 
+  const sendPrompt = useCallback(async (prompt: string, mode: 'original' | 'alteracao' = 'original'): Promise<any> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await n8nService.sendPrompt(prompt, mode);
+      toast({
+        title: mode === 'alteracao' ? 'Alteração enviada' : 'Prompt definido',
+        description: mode === 'alteracao' ? 'Sua alteração foi enviada para a IA.' : 'Seu prompt foi configurado com sucesso.',
+      });
+      return result;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao enviar prompt';
+      setError(errorMessage);
+      toast({
+        title: "Erro ao Enviar Prompt",
+        description: "Verifique se o servidor está configurado corretamente.",
+        variant: "destructive",
+      });
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [n8nService, toast]);
+
   const changePersonality = useCallback(async (personality: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
@@ -134,6 +159,7 @@ export const useN8N = (config: N8NConfig) => {
     changePersonality,
     defineName,
     sendMessage,
+    sendPrompt,
     definePhone,
     clearMemory,
     releaseNumber

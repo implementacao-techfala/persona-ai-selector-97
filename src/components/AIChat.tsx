@@ -1,10 +1,11 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Bot, 
   Phone, 
@@ -14,17 +15,34 @@ import {
 import WhatsAppTestSession from "./WhatsAppTestSession";
 import PersonalizeIAInvite from "./PersonalizeIAInvite";
 import { useNavigate } from "react-router-dom";
+import { useN8N } from "@/hooks/useN8N";
+import type { N8NConfig } from "@/services/n8nService";
+import { useToast } from "@/hooks/use-toast";
 
 interface AIChatProps {
   selectedName: string;
   selectedPersonality: string;
   onChangePersonality: () => void;
   onRestart: () => void;
+  n8nConfig: N8NConfig;
 }
 
-const AIChat = ({ selectedName, selectedPersonality, onChangePersonality, onRestart }: AIChatProps) => {
+const AIChat = ({ selectedName, selectedPersonality, onChangePersonality, onRestart, n8nConfig }: AIChatProps) => {
   const [showPersonalizeInvite, setShowPersonalizeInvite] = useState(false);
+  const [promptUpdate, setPromptUpdate] = useState("");
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { sendPrompt } = useN8N(n8nConfig);
+
+  useEffect(() => {
+    if (localStorage.getItem('just-configured-ia')) {
+      localStorage.removeItem('just-configured-ia');
+      toast({
+        title: 'IA configurada! 🚀',
+        description: 'Teste agora no chat a IA que você acabou de personalizar.',
+      });
+    }
+  }, [toast]);
 
   const personalityNames: { [key: string]: string } = {
     contabilidade: "Contabilidade",
@@ -130,6 +148,52 @@ const AIChat = ({ selectedName, selectedPersonality, onChangePersonality, onRest
                     Reiniciar
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Prompt Update Card */}
+            <Card className="bg-slate-900/90 border-slate-700 backdrop-blur-xl">
+              <CardHeader>
+                <CardTitle className="text-white text-lg">Aprimorar sua IA</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Label className="text-gray-300 text-sm">Escreva alterações ou novos dados</Label>
+                <Textarea
+                  value={promptUpdate}
+                  onChange={(e) => setPromptUpdate(e.target.value)}
+                  placeholder="Ex.: Adicione que atendemos das 8h às 18h, com prioridade para emergências."
+                  className="min-h-[120px] bg-slate-800/60 border-slate-700 text-white"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    onClick={async () => {
+                      if (!promptUpdate.trim()) {
+                        toast({ title: 'Nada para enviar', description: 'Digite algo para adicionar ao prompt.' });
+                        return;
+                      }
+                      await sendPrompt(promptUpdate.trim(), 'alteracao');
+                      setPromptUpdate("");
+                    }}
+                  >
+                    Adicionar ao prompt
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-slate-900"
+                    onClick={async () => {
+                      if (!promptUpdate.trim()) {
+                        toast({ title: 'Nada para mudar', description: 'Digite o novo prompt completo.' });
+                        return;
+                      }
+                      await sendPrompt(promptUpdate.trim(), 'original');
+                      setPromptUpdate("");
+                    }}
+                  >
+                    Mudar prompt
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-400">• “Adicionar” incrementa ao que já foi configurado. “Mudar” substitui completamente.</p>
               </CardContent>
             </Card>
           </div>

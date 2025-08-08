@@ -6,6 +6,8 @@ import { AIVoiceInput } from "@/components/AIVoiceInput";
 import { Textarea } from "@/components/ui/textarea";
 import { Bot, ArrowRight, Check, Sparkles, Heart, Brain, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useN8N } from "@/hooks/useN8N";
+import { N8N_CONFIG } from "@/config/n8n";
 
 type Step = "intro" | "recording" | "review" | "result";
 
@@ -15,6 +17,7 @@ const PersonalizeIA = () => {
   const [transcript, setTranscript] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
+  const { sendPrompt } = useN8N(N8N_CONFIG);
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 100);
@@ -34,7 +37,9 @@ const PersonalizeIA = () => {
     setCurrentStep("review");
   };
 
-  const handleFinish = () => {
+  const handleConfirmPrompt = () => {
+    try { sendPrompt(transcript || "", 'original'); } catch (e) { /* noop */ }
+    localStorage.setItem('just-configured-ia', '1');
     navigate("/");
   };
 
@@ -167,7 +172,7 @@ const PersonalizeIA = () => {
               <Button onClick={() => setCurrentStep('recording')} variant="outline" className="border-slate-600 text-slate-200">
                 Regravar
               </Button>
-              <Button onClick={() => setCurrentStep('result')} className="bg-green-600 hover:bg-green-700 text-white">
+              <Button onClick={handleConfirmPrompt} className="bg-green-600 hover:bg-green-700 text-white">
                 Confirmar
               </Button>
             </div>
