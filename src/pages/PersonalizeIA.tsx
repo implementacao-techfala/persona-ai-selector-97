@@ -43,6 +43,9 @@ const PersonalizeIA = () => {
     navigate("/");
   };
 
+  const handleFinish = () => {
+    navigate("/");
+  };
   const renderIntro = () => (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
       <GlowCard 
